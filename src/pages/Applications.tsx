@@ -104,8 +104,8 @@ const Applications: React.FC = () => {
           
           {/* Header Text */}
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">Job Applications</h1>
-            <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Track and update your application status</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">Application Tracker</h1>
+            <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Track & update your job application status.</p>
           </div>
         </div>
         <button 

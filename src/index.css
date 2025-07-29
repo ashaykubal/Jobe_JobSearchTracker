@@ -11,10 +11,13 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #0f0f0f;
   color: #e5e7eb;
+  overflow: hidden;
 }
 
 html {
   background-color: #0f0f0f;
+  scroll-behavior: smooth;
+  overflow: hidden;
 }
 
 /* Motion-safe transitions for accessibility */
@@ -62,4 +65,32 @@ textarea:active,
 a:active,
 [role="button"]:active {
   transform: translateY(0);
+}
+
+/* OverlayScrollbars Dark Theme Customization */
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle {
+  background: rgba(55, 65, 81, 0.7);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle:hover {
+  background: rgba(55, 65, 81, 0.9);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track {
+  background: transparent;
+}
+
+.os-theme-dark > .os-scrollbar {
+  --os-size: 8px;
 }

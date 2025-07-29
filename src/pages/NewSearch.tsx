@@ -18,8 +18,8 @@ const NewSearch: React.FC = () => {
         
         {/* Header Text */}
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">New Job Search</h1>
-          <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Let Jobe find the perfect job opportunities for you</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">New Search</h1>
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Chat with Jobe to find the perfect job.</p>
         </div>
       </div>
 
@@ -29,7 +29,19 @@ const NewSearch: React.FC = () => {
         <div className="border-b border-dark-border p-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-              <Bot className="w-6 h-6 text-primary" />
+              <img 
+                src="/src/assets/headhunterlogo.png" 
+                alt="Jobe Logo" 
+                className="w-6 h-6 object-contain"
+                style={{ filter: 'brightness(0) saturate(100%) invert(64%) sepia(98%) saturate(7151%) hue-rotate(258deg) brightness(102%) contrast(96%)' }}
+                onError={(e) => {
+                  // Fallback to Bot icon if logo fails to load
+                  e.currentTarget.style.display = 'none';
+                  const fallback = document.createElement('div');
+                  fallback.innerHTML = '<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+                  e.currentTarget.parentNode?.appendChild(fallback.firstChild!);
+                }}
+              />
             </div>
             <div>
               <h3 className="font-semibold text-gray-200">Jobe</h3>
@@ -43,7 +55,19 @@ const NewSearch: React.FC = () => {
           {/* Bot Message */}
           <div className="flex items-start space-x-3 mb-6">
             <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <Bot className="w-5 h-5 text-primary" />
+              <img 
+                src="/src/assets/headhunterlogo.png" 
+                alt="Jobe Logo" 
+                className="w-5 h-5 object-contain"
+                style={{ filter: 'brightness(0) saturate(100%) invert(64%) sepia(98%) saturate(7151%) hue-rotate(258deg) brightness(102%) contrast(96%)' }}
+                onError={(e) => {
+                  // Fallback to Bot icon if logo fails to load
+                  e.currentTarget.style.display = 'none';
+                  const fallback = document.createElement('div');
+                  fallback.innerHTML = '<svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+                  e.currentTarget.parentNode?.appendChild(fallback.firstChild!);
+                }}
+              />
             </div>
             <div className="flex-1">
               <div className="bg-gray-800/50 rounded-lg rounded-tl-none p-4 max-w-md">
