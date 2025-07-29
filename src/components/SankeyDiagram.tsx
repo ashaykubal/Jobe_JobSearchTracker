@@ -118,6 +118,8 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
       // MOBILE LAYOUT - Vertical orientation
       const svgInternalWidth = 320;
       const svgInternalHeight = 450;
+      const rowSpacing = (svgInternalHeight - 2 * padding) / 3;
+      
       processedNodes = mockData.nodes.map(node => {
         let x = svgInternalWidth / 2; // Center by default
         let y = padding;
