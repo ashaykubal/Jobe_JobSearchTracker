@@ -9,8 +9,8 @@
 
 /* CSS Custom Properties for Scrollbar Theming */
 :root {
-  --scrollbar-thumb-color: rgba(168, 85, 247, 0.6);
-  --scrollbar-thumb-hover-color: rgba(168, 85, 247, 0.8);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
   --scrollbar-track-color: transparent;
   --scrollbar-width: 8px;
   --scrollbar-border-radius: 4px;
@@ -18,14 +18,14 @@
 
 /* Dark theme scrollbar colors (default) */
 .dark {
-  --scrollbar-thumb-color: rgba(168, 85, 247, 0.6);
-  --scrollbar-thumb-hover-color: rgba(168, 85, 247, 0.8);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Light theme scrollbar colors */
 .light {
-  --scrollbar-thumb-color: rgba(168, 85, 247, 0.7);
-  --scrollbar-thumb-hover-color: rgba(168, 85, 247, 0.9);
+  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.4);
 }
 
 body {
@@ -37,6 +37,16 @@ body {
 html {
   background-color: #0f0f0f;
   scroll-behavior: smooth;
+}
+
+/* Hide scrollbar arrows/buttons for clean floating appearance */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Ensure scrollbar corner is transparent */
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Global Scrollbar Styling - Webkit Browsers (Chrome, Safari, Edge) */
@@ -54,17 +64,23 @@ html {
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb-color);
   border-radius: var(--scrollbar-border-radius);
+  /* Enhanced glassmorphic effect */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   opacity: 0;
   transition: all 0.3s ease-in-out;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 /* Show scrollbar when active */

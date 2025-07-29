@@ -11,7 +11,7 @@
  */
 
 // Configuration constants
-const SCROLL_HIDE_DELAY = 500; // ms
+const SCROLL_HIDE_DELAY = 2500; // ms - Extended delay for better UX (2.5 seconds)
 const HOVER_EDGE_THRESHOLD = 50; // pixels from right edge
 const THROTTLE_DELAY = 16; // ~60fps for smooth performance
 
