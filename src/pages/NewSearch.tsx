@@ -18,8 +18,8 @@ const NewSearch: React.FC = () => {
         
         {/* Header Text */}
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">New Job Search</h1>
-          <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Let Jobe find the perfect job opportunities for you</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">New Search</h1>
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Chat with Jobe to find the perfect job.</p>
         </div>
       </div>
 
