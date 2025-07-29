@@ -32,8 +32,8 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Application Tracker */}
-      <div className="bg-dark-card/70 backdrop-blur-sm rounded-lg p-8 shadow-glow-card border border-dark-border mb-12">
-        <h2 className="text-2xl font-bold text-gray-200 mb-6">Application Tracker</h2>
+      <div className="bg-dark-card/70 backdrop-blur-sm rounded-lg p-4 md:p-8 shadow-glow-card border border-dark-border mb-6 md:mb-12">
+        <h2 className="text-2xl font-bold text-gray-200 mb-2 md:mb-6">Application Tracker</h2>
         <div className="w-full">
           <SankeyDiagram />
         </div>
