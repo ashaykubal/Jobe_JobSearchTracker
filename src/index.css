@@ -7,27 +7,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Custom Properties for Scrollbar Theming */
-:root {
-  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
-  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
-  --scrollbar-track-color: transparent;
-  --scrollbar-width: 8px;
-  --scrollbar-border-radius: 4px;
-}
-
-/* Dark theme scrollbar colors (default) */
-.dark {
-  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
-  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
-}
-
-/* Light theme scrollbar colors */
-.light {
-  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
-  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.4);
-}
-
 body {
   font-family: 'Inter', sans-serif;
   background-color: #0f0f0f;
@@ -37,85 +16,6 @@ body {
 html {
   background-color: #0f0f0f;
   scroll-behavior: smooth;
-}
-
-/* Hide scrollbar arrows/buttons for clean floating appearance */
-::-webkit-scrollbar-button {
-  display: none;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* Ensure scrollbar corner is transparent */
-::-webkit-scrollbar-corner {
-  background: transparent !important;
-  background-color: transparent !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* Global Scrollbar Styling - Webkit Browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: var(--scrollbar-width);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent !important;
-  background-color: transparent !important;
-  border-radius: var(--scrollbar-border-radius);
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-color);
-  border-radius: var(--scrollbar-border-radius);
-  /* Enhanced glassmorphic effect */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  opacity: 0;
-  transition: all 0.3s ease-in-out;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover-color);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-/* Show scrollbar when active */
-.show-scrollbar ::-webkit-scrollbar {
-  opacity: 1;
-}
-
-.show-scrollbar ::-webkit-scrollbar-thumb {
-  opacity: 1;
-}
-
-/* Firefox Scrollbar Styling */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
-}
-
-/* Hide scrollbar by default in Firefox */
-html:not(.show-scrollbar) * {
-  scrollbar-width: none;
-}
-
-/* Show scrollbar when active in Firefox */
-.show-scrollbar * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
 }
 
 /* Motion-safe transitions for accessibility */
@@ -163,4 +63,32 @@ textarea:active,
 a:active,
 [role="button"]:active {
   transform: translateY(0);
+}
+
+/* OverlayScrollbars Dark Theme Customization */
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle {
+  background: rgba(168, 85, 247, 0.3);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle:hover {
+  background: rgba(168, 85, 247, 0.5);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.os-theme-dark > .os-scrollbar > .os-scrollbar-track {
+  background: transparent;
+}
+
+.os-theme-dark > .os-scrollbar {
+  --os-size: 8px;
 }
