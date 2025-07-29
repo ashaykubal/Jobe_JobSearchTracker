@@ -69,7 +69,7 @@ a:active,
 
 /* OverlayScrollbars Dark Theme Customization */
 .os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle {
-  background: rgba(168, 85, 247, 0.3);
+  background: rgba(42, 42, 42, 0.7);
   border-radius: 4px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -80,7 +80,7 @@ a:active,
 }
 
 .os-theme-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle:hover {
-  background: rgba(168, 85, 247, 0.5);
+  background: rgba(42, 42, 42, 0.9);
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
