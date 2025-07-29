@@ -17,7 +17,7 @@ const Dashboard: React.FC = () => {
         <img 
           src="/src/assets/headhunterlogo.png" 
           alt="Jobe Logo" 
-          className="h-20 w-auto object-contain mr-4"
+          className="h-16 w-auto object-contain mr-4"
           onError={(e) => {
             // Hide logo if it fails to load
             e.currentTarget.style.display = 'none';
