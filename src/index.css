@@ -42,11 +42,15 @@ html {
 /* Hide scrollbar arrows/buttons for clean floating appearance */
 ::-webkit-scrollbar-button {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 /* Ensure scrollbar corner is transparent */
 ::-webkit-scrollbar-corner {
-  background: transparent;
+  background-color: transparent !important;
+  width: 0;
+  height: 0;
 }
 
 /* Global Scrollbar Styling - Webkit Browsers (Chrome, Safari, Edge) */
@@ -57,8 +61,10 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--scrollbar-track-color);
+  background-color: transparent !important;
+  background: transparent !important;
   border-radius: var(--scrollbar-border-radius);
+  width: 0;
 }
 
 ::-webkit-scrollbar-thumb {

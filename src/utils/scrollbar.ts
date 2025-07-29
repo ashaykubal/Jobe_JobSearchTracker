@@ -11,17 +11,14 @@
  */
 
 // Configuration constants
-const SCROLL_HIDE_DELAY = 2500; // ms - Extended delay for better UX (2.5 seconds)
+const SCROLL_HIDE_DELAY = 2000; // ms - Delay before hiding scrollbar (2 seconds)
 const HOVER_EDGE_THRESHOLD = 50; // pixels from right edge
-const THROTTLE_DELAY = 16; // ~60fps for smooth performance
 
 // State management
 let scrollTimeout: NodeJS.Timeout | null = null;
 let hoverTimeout: NodeJS.Timeout | null = null;
 let isScrolling = false;
 let isHovering = false;
-let lastScrollTime = 0;
-let lastMouseMoveTime = 0;
 
 /**
  * Shows the custom scrollbar by adding the show-scrollbar class
@@ -38,40 +35,9 @@ const hideScrollbar = (): void => {
 };
 
 /**
- * Throttle function to limit the frequency of function calls
- */
-const throttle = (func: Function, delay: number) => {
-  let timeoutId: NodeJS.Timeout | null = null;
-  let lastExecTime = 0;
-  
-  return function (this: any, ...args: any[]) {
-    const currentTime = Date.now();
-    
-    if (currentTime - lastExecTime > delay) {
-      func.apply(this, args);
-      lastExecTime = currentTime;
-    } else {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func.apply(this, args);
-        lastExecTime = Date.now();
-      }, delay - (currentTime - lastExecTime));
-    }
-  };
-};
-
-/**
- * Handles scroll events with debounced hiding logic
+ * Handles scroll events with debounced hiding logic (no throttling)
  */
 const handleScroll = (): void => {
-  const currentTime = Date.now();
-  
-  // Throttle scroll events for performance
-  if (currentTime - lastScrollTime < THROTTLE_DELAY) {
-    return;
-  }
-  lastScrollTime = currentTime;
-
   // Show scrollbar immediately when scrolling starts
   if (!isScrolling) {
     isScrolling = true;
@@ -94,17 +60,9 @@ const handleScroll = (): void => {
 };
 
 /**
- * Handles mouse movement for edge hover detection
+ * Handles mouse movement for edge hover detection (no throttling)
  */
 const handleMouseMove = (event: MouseEvent): void => {
-  const currentTime = Date.now();
-  
-  // Throttle mouse move events for performance
-  if (currentTime - lastMouseMoveTime < THROTTLE_DELAY) {
-    return;
-  }
-  lastMouseMoveTime = currentTime;
-
   const { clientX } = event;
   const windowWidth = window.innerWidth;
   const distanceFromRightEdge = windowWidth - clientX;
@@ -162,37 +120,34 @@ const handleTouchEnd = (): void => {
 };
 
 /**
- * Throttled event handlers for performance optimization
- */
-const throttledHandleScroll = throttle(handleScroll, THROTTLE_DELAY);
-const throttledHandleMouseMove = throttle(handleMouseMove, THROTTLE_DELAY);
-
-/**
  * Sets up global scrollbar visibility management
  * @returns Cleanup function to remove event listeners
  */
 export const setupGlobalScrollbarVisibility = (): (() => void) => {
   // Add event listeners
-  window.addEventListener('scroll', throttledHandleScroll, { passive: true });
-  window.addEventListener('mousemove', throttledHandleMouseMove, { passive: true });
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('mousemove', handleMouseMove, { passive: true });
   
   // Mobile touch events
   window.addEventListener('touchstart', handleTouchStart, { passive: true });
   window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
   // Handle window resize to recalculate hover threshold
-  const handleResize = throttle(() => {
-    // Force recalculation on next mouse move
-    lastMouseMoveTime = 0;
-  }, 250);
+  const handleResize = () => {
+    // Reset hover state on resize to recalculate edge detection
+    if (isHovering && !isScrolling) {
+      hideScrollbar();
+      isHovering = false;
+    }
+  };
   
   window.addEventListener('resize', handleResize, { passive: true });
 
   // Cleanup function
   return () => {
     // Remove event listeners
-    window.removeEventListener('scroll', throttledHandleScroll);
-    window.removeEventListener('mousemove', throttledHandleMouseMove);
+    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('touchstart', handleTouchStart);
     window.removeEventListener('touchend', handleTouchEnd);
     window.removeEventListener('resize', handleResize);
