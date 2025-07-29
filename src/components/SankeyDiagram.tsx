@@ -116,8 +116,8 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
 
     if (isMobile) {
       // MOBILE LAYOUT - Vertical orientation
-      const rowSpacing = (svgInternalHeight - 2 * padding) / 4; // 5 rows total (0-4)
-
+      const svgInternalWidth = 320;
+      const svgInternalHeight = 450;
       processedNodes = mockData.nodes.map(node => {
         let x = svgInternalWidth / 2; // Center by default
         let y = padding;
@@ -362,7 +362,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     <div className="w-full overflow-x-auto">
       <svg 
         width="100%" 
-        height={isMobile ? "500px" : "400px"}
+        height={isMobile ? "450px" : "400px"}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="w-full"
         preserveAspectRatio="xMidYMid meet"
