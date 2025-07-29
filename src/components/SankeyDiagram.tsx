@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 interface SankeyNode {
   id: string;
@@ -6,6 +6,7 @@ interface SankeyNode {
   value: number;
   x: number;
   y: number;
+  width: number;
   height: number;
   color: string;
   column: number;
@@ -17,6 +18,8 @@ interface SankeyLink {
   value: number;
   sourceY: number;
   targetY: number;
+  sourceX?: number;
+  targetX?: number;
   color: string;
 }
 
@@ -33,6 +36,25 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     nodes: Set<string>;
     links: Set<string>;
   }>({ nodes: new Set(), links: new Set() });
+
+  // Responsive state management
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if viewport is mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Mock data based on the reference image
   const mockData = {
@@ -81,101 +103,202 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     }
   };
 
-  const { nodes, links } = useMemo(() => {
-    const padding = 60;
-    const nodeWidth = 20;
-    const columnSpacing = (width - 2 * padding - nodeWidth) / 3;
+  const { nodes, links, svgWidth, svgHeight } = useMemo(() => {
+    // Define responsive dimensions
+    const svgInternalWidth = isMobile ? 320 : 800;
+    const svgInternalHeight = isMobile ? 600 : 400;
+    const padding = isMobile ? 40 : 60;
+    const nodeWidth = isMobile ? 30 : 20;
+    const nodeHeight = isMobile ? 15 : 0; // Fixed height for mobile, calculated for desktop
 
-    // Position nodes in columns
-    const processedNodes: SankeyNode[] = mockData.nodes.map(node => {
-      let x = padding;
-      let column = 0;
+    let processedNodes: SankeyNode[];
+    let processedLinks: SankeyLink[];
 
-      // Determine column based on node type
-      if (node.id === 'applications') {
-        column = 0;
-      } else if (['interviews', 'rejected', 'no-answer'].includes(node.id)) {
-        column = 1;
-      } else if (['offers', 'no-offer'].includes(node.id)) {
-        column = 2;
-      } else {
-        column = 3;
-      }
+    if (isMobile) {
+      // MOBILE LAYOUT - Vertical orientation
+      const rowSpacing = (svgInternalHeight - 2 * padding) / 4; // 5 rows total (0-4)
 
-      x = padding + column * columnSpacing;
+      processedNodes = mockData.nodes.map(node => {
+        let x = svgInternalWidth / 2; // Center by default
+        let y = padding;
+        let row = 0;
 
-      // Calculate node height based on value
-      const maxValue = Math.max(...mockData.nodes.map(n => n.value));
-      const nodeHeight = Math.max(40, (node.value / maxValue) * (height - 2 * padding) * 0.3);
+        // Determine row and x position based on node type
+        if (node.id === 'applications') {
+          row = 0;
+          x = svgInternalWidth / 2;
+        } else if (['interviews', 'rejected', 'no-answer'].includes(node.id)) {
+          row = 1;
+          if (node.id === 'interviews') x = svgInternalWidth / 2 - 80;
+          else if (node.id === 'rejected') x = svgInternalWidth / 2;
+          else if (node.id === 'no-answer') x = svgInternalWidth / 2 + 80;
+        } else if (['offers', 'no-offer'].includes(node.id)) {
+          row = 2;
+          if (node.id === 'offers') x = svgInternalWidth / 2 - 40;
+          else if (node.id === 'no-offer') x = svgInternalWidth / 2 + 40;
+        } else {
+          row = 3;
+          if (node.id === 'accepted') x = svgInternalWidth / 2 - 40;
+          else if (node.id === 'declined') x = svgInternalWidth / 2 + 40;
+        }
 
-      // Position nodes vertically within their column
-      let y = padding;
-      if (column === 1) {
-        if (node.id === 'interviews') y = padding + 10;
-        else if (node.id === 'rejected') y = padding + 100;
-        else if (node.id === 'no-answer') y = padding + 200;
-      } else if (column === 2) {
-        if (node.id === 'offers') y = padding + 10;
-        else if (node.id === 'no-offer') y = padding + 80;
-      } else if (column === 3) {
-        if (node.id === 'accepted') y = padding + 10;
-        else if (node.id === 'declined') y = padding + 80;
-      }
+        y = padding + row * rowSpacing;
 
-      return {
-        id: node.id,
-        label: node.label,
-        value: node.value,
-        x,
-        y,
-        height: nodeHeight,
-        color: getStatusColor(node.id),
-        column
-      };
-    });
+        return {
+          id: node.id,
+          label: node.label,
+          value: node.value,
+          x: x - nodeWidth / 2, // Center the node
+          y,
+          width: nodeWidth,
+          height: nodeHeight,
+          color: getStatusColor(node.id),
+          column: row
+        };
+      });
 
-    // Create links with proper positioning
-    const processedLinks: SankeyLink[] = mockData.links.map(link => {
-      const sourceNode = processedNodes.find(n => n.id === link.source)!;
-      const targetNode = processedNodes.find(n => n.id === link.target)!;
+      // Create vertical links
+      processedLinks = mockData.links.map(link => {
+        const sourceNode = processedNodes.find(n => n.id === link.source)!;
+        const targetNode = processedNodes.find(n => n.id === link.target)!;
 
-      return {
-        source: link.source,
-        target: link.target,
-        value: link.value,
-        sourceY: sourceNode.y + sourceNode.height / 2,
-        targetY: targetNode.y + targetNode.height / 2,
-        color: targetNode.color
-      };
-    });
+        return {
+          source: link.source,
+          target: link.target,
+          value: link.value,
+          sourceX: sourceNode.x + sourceNode.width / 2,
+          targetX: targetNode.x + targetNode.width / 2,
+          sourceY: sourceNode.y + sourceNode.height,
+          targetY: targetNode.y,
+          color: targetNode.color
+        };
+      });
 
-    return { nodes: processedNodes, links: processedLinks };
-  }, [width, height]);
+    } else {
+      // DESKTOP LAYOUT - Horizontal orientation (existing logic)
+      const columnSpacing = (svgInternalWidth - 2 * padding - nodeWidth) / 3;
 
-  // Generate SVG path for curved links
+      processedNodes = mockData.nodes.map(node => {
+        let x = padding;
+        let column = 0;
+
+        // Determine column based on node type
+        if (node.id === 'applications') {
+          column = 0;
+        } else if (['interviews', 'rejected', 'no-answer'].includes(node.id)) {
+          column = 1;
+        } else if (['offers', 'no-offer'].includes(node.id)) {
+          column = 2;
+        } else {
+          column = 3;
+        }
+
+        x = padding + column * columnSpacing;
+
+        // Calculate node height based on value
+        const maxValue = Math.max(...mockData.nodes.map(n => n.value));
+        const calculatedHeight = Math.max(40, (node.value / maxValue) * (svgInternalHeight - 2 * padding) * 0.3);
+
+        // Position nodes vertically within their column
+        let y = padding;
+        if (column === 1) {
+          if (node.id === 'interviews') y = padding + 10;
+          else if (node.id === 'rejected') y = padding + 100;
+          else if (node.id === 'no-answer') y = padding + 200;
+        } else if (column === 2) {
+          if (node.id === 'offers') y = padding + 10;
+          else if (node.id === 'no-offer') y = padding + 80;
+        } else if (column === 3) {
+          if (node.id === 'accepted') y = padding + 10;
+          else if (node.id === 'declined') y = padding + 80;
+        }
+
+        return {
+          id: node.id,
+          label: node.label,
+          value: node.value,
+          x,
+          y,
+          width: nodeWidth,
+          height: calculatedHeight,
+          color: getStatusColor(node.id),
+          column
+        };
+      });
+
+      // Create horizontal links
+      processedLinks = mockData.links.map(link => {
+        const sourceNode = processedNodes.find(n => n.id === link.source)!;
+        const targetNode = processedNodes.find(n => n.id === link.target)!;
+
+        return {
+          source: link.source,
+          target: link.target,
+          value: link.value,
+          sourceY: sourceNode.y + sourceNode.height / 2,
+          targetY: targetNode.y + targetNode.height / 2,
+          color: targetNode.color
+        };
+      });
+    }
+
+    return { 
+      nodes: processedNodes, 
+      links: processedLinks,
+      svgWidth: svgInternalWidth,
+      svgHeight: svgInternalHeight
+    };
+  }, [isMobile]);
+
+  // Generate SVG path for curved links (responsive)
   const generatePath = (link: SankeyLink, sourceNode: SankeyNode, targetNode: SankeyNode) => {
-    const sourceX = sourceNode.x + 20;
-    const targetX = targetNode.x;
-    const sourceY = link.sourceY;
-    const targetY = link.targetY;
-    
-    const controlPointOffset = (targetX - sourceX) * 0.5;
-    
-    const linkHeight = Math.max(8, (link.value / 17) * 40);
-    
-    const path = `
-      M ${sourceX} ${sourceY - linkHeight/2}
-      C ${sourceX + controlPointOffset} ${sourceY - linkHeight/2}
-        ${targetX - controlPointOffset} ${targetY - linkHeight/2}
-        ${targetX} ${targetY - linkHeight/2}
-      L ${targetX} ${targetY + linkHeight/2}
-      C ${targetX - controlPointOffset} ${targetY + linkHeight/2}
-        ${sourceX + controlPointOffset} ${sourceY + linkHeight/2}
-        ${sourceX} ${sourceY + linkHeight/2}
-      Z
-    `;
-    
-    return path;
+    if (isMobile) {
+      // MOBILE - Vertical paths
+      const sourceX = link.sourceX!;
+      const targetX = link.targetX!;
+      const sourceY = link.sourceY;
+      const targetY = link.targetY;
+      
+      const controlPointOffset = (targetY - sourceY) * 0.5;
+      const linkWidth = Math.max(6, (link.value / 17) * 25);
+      
+      const path = `
+        M ${sourceX - linkWidth/2} ${sourceY}
+        C ${sourceX - linkWidth/2} ${sourceY + controlPointOffset}
+          ${targetX - linkWidth/2} ${targetY - controlPointOffset}
+          ${targetX - linkWidth/2} ${targetY}
+        L ${targetX + linkWidth/2} ${targetY}
+        C ${targetX + linkWidth/2} ${targetY - controlPointOffset}
+          ${sourceX + linkWidth/2} ${sourceY + controlPointOffset}
+          ${sourceX + linkWidth/2} ${sourceY}
+        Z
+      `;
+      
+      return path;
+    } else {
+      // DESKTOP - Horizontal paths (existing logic)
+      const sourceX = sourceNode.x + sourceNode.width;
+      const targetX = targetNode.x;
+      const sourceY = link.sourceY;
+      const targetY = link.targetY;
+      
+      const controlPointOffset = (targetX - sourceX) * 0.5;
+      const linkHeight = Math.max(8, (link.value / 17) * 40);
+      
+      const path = `
+        M ${sourceX} ${sourceY - linkHeight/2}
+        C ${sourceX + controlPointOffset} ${sourceY - linkHeight/2}
+          ${targetX - controlPointOffset} ${targetY - linkHeight/2}
+          ${targetX} ${targetY - linkHeight/2}
+        L ${targetX} ${targetY + linkHeight/2}
+        C ${targetX - controlPointOffset} ${targetY + linkHeight/2}
+          ${sourceX + controlPointOffset} ${sourceY + linkHeight/2}
+          ${sourceX} ${sourceY + linkHeight/2}
+        Z
+      `;
+      
+      return path;
+    }
   };
 
   // Get only the direct path from a specific node (not the entire tree)
@@ -238,9 +361,11 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
   return (
     <div className="w-full overflow-x-auto">
       <svg 
-        width={width} 
-        height={height} 
+        width="100%" 
+        height={isMobile ? "600px" : "400px"}
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="w-full"
+        preserveAspectRatio="xMidYMid meet"
       >
         {/* Links */}
         {links.map((link, index) => {
@@ -266,29 +391,33 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
         {nodes.map(node => {
           const isHighlighted = isNodeHighlighted(node.id);
           
-          // Smart text positioning to avoid branch overlap
+          // Responsive text positioning
           let textX, textY, textAnchor;
           
-          if (node.id === 'applications') {
-            // Position above the node
-            textX = node.x + 10;
-            textY = node.y - 15;
+          if (isMobile) {
+            // MOBILE - Position text below nodes
+            textX = node.x + node.width / 2;
+            textY = node.y + node.height + 15;
             textAnchor = 'middle';
-          } else if (node.id === 'rejected' || node.id === 'no-answer') {
-            // Position below the node
-            textX = node.x + 10;
-            textY = node.y + node.height + 35;
-            textAnchor = 'middle';
-          } else if (node.column === 3) {
-            // Rightmost column - position to the right
-            textX = node.x + 35;
-            textY = node.y + node.height / 2;
-            textAnchor = 'start';
           } else {
-            // Other nodes - position to the left
-            textX = node.x - 15;
-            textY = node.y + node.height / 2;
-            textAnchor = 'end';
+            // DESKTOP - Smart text positioning to avoid branch overlap (existing logic)
+            if (node.id === 'applications') {
+              textX = node.x + 10;
+              textY = node.y - 15;
+              textAnchor = 'middle';
+            } else if (node.id === 'rejected' || node.id === 'no-answer') {
+              textX = node.x + 10;
+              textY = node.y + node.height + 35;
+              textAnchor = 'middle';
+            } else if (node.column === 3) {
+              textX = node.x + 35;
+              textY = node.y + node.height / 2;
+              textAnchor = 'start';
+            } else {
+              textX = node.x - 15;
+              textY = node.y + node.height / 2;
+              textAnchor = 'end';
+            }
           }
           
           return (
@@ -297,7 +426,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
               <rect
                 x={node.x}
                 y={node.y}
-                width={20}
+                width={node.width}
                 height={node.height}
                 fill={node.color}
                 fillOpacity={hasHoveredElements ? (isHighlighted ? 1 : 0.2) : 1}
@@ -309,11 +438,11 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
               {/* Node value */}
               <text
                 x={textX}
-                y={textY - 8}
+                y={textY - (isMobile ? 8 : 8)}
                 textAnchor={textAnchor}
                 dominantBaseline="middle"
                 fill={hasHoveredElements ? (isHighlighted ? '#f3f4f6' : '#6b7280') : '#e5e7eb'}
-                className="text-lg font-bold transition-all duration-300 cursor-pointer pointer-events-none select-none"
+                className={`${isMobile ? 'text-sm' : 'text-lg'} font-bold transition-all duration-300 cursor-pointer pointer-events-none select-none`}
                 onMouseEnter={() => handleHover('node', node.id)}
                 onMouseLeave={handleMouseLeave}
               >
@@ -323,11 +452,11 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
               {/* Node label */}
               <text
                 x={textX}
-                y={textY + 12}
+                y={textY + (isMobile ? 8 : 12)}
                 textAnchor={textAnchor}
                 dominantBaseline="middle"
                 fill={hasHoveredElements ? (isHighlighted ? '#d1d5db' : '#6b7280') : '#9ca3af'}
-                className="text-sm transition-all duration-300 cursor-pointer pointer-events-none select-none"
+                className={`${isMobile ? 'text-xs' : 'text-sm'} transition-all duration-300 cursor-pointer pointer-events-none select-none`}
                 onMouseEnter={() => handleHover('node', node.id)}
                 onMouseLeave={handleMouseLeave}
               >
