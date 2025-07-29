@@ -106,7 +106,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
   const { nodes, links, svgWidth, svgHeight } = useMemo(() => {
     // Define responsive dimensions
     const svgInternalWidth = isMobile ? 320 : 800;
-    const svgInternalHeight = isMobile ? 600 : 400;
+    const svgInternalHeight = isMobile ? 500 : 400;
     const padding = isMobile ? 40 : 60;
     const nodeWidth = isMobile ? 30 : 20;
     const nodeHeight = isMobile ? 15 : 0; // Fixed height for mobile, calculated for desktop
@@ -362,7 +362,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     <div className="w-full overflow-x-auto">
       <svg 
         width="100%" 
-        height={isMobile ? "600px" : "400px"}
+        height={isMobile ? "500px" : "400px"}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="w-full"
         preserveAspectRatio="xMidYMid meet"
