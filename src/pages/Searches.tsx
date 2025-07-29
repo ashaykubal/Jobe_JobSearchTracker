@@ -31,18 +31,26 @@ const Searches: React.FC = () => {
 
   return (
     <div className="p-4 lg:p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-200 mb-2">Job Searches</h1>
-          <p className="text-xl text-gray-400">AI-powered job search history</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div className="w-full sm:w-auto text-left flex items-center">
+          {/* Logo */}
+          <img 
+            src="/src/assets/headhunterlogo.png" 
+            alt="Jobe Logo" 
+            className="h-16 w-auto object-contain mr-4"
+            onError={(e) => {
+              // Hide logo if it fails to load
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+          
+          {/* Header Text */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">Saved Searches</h1>
+            <p className="text-sm sm:text-lg lg:text-xl text-gray-400">See latest jobs by running a search</p>
+          </div>
         </div>
         <button className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2 shadow-lg">
-        </button>
-        <button className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2 shadow-glow-primary">
-        </button>
-        <button className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/80 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ease-in-out flex items-center space-x-2 shadow-glow-primary">
-          <Filter className="w-5 h-5" />
-          <span>Filter Results</span>
         </button>
       </div>
 
