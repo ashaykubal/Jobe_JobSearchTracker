@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
+import { setupGlobalScrollbarVisibility } from './utils/scrollbar';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -11,6 +12,14 @@ import Profile from './pages/Profile';
 import AuthCallback from './pages/AuthCallback';
 
 function App() {
+  // Initialize global scrollbar visibility management
+  useEffect(() => {
+    const cleanup = setupGlobalScrollbarVisibility();
+    
+    // Cleanup on component unmount
+    return cleanup;
+  }, []);
+
   return (
     <ThemeProvider>
       <Router>
