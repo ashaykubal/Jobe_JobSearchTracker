@@ -26,8 +26,8 @@ const Dashboard: React.FC = () => {
         
         {/* Header Text */}
         <div>
-          <h1 className="text-4xl font-bold text-gray-200 mb-2">Welcome back to Jobe</h1>
-          <p className="text-xl text-gray-400">Your AI Powered Career Co-Pilot</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 mb-2">Dashboard</h1>
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-400">Your job application journey, visualized.</p>
         </div>
       </div>
 
