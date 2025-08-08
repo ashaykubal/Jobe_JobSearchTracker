@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Calendar, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Calendar, MapPin, ChevronDown, ChevronUp, Edit3, X, Check } from 'lucide-react';
 
 interface SearchDetails {
-  keywords: string[];
+  roles: string[];
+  jobBoards: string[];
   experience: string;
   salary: string;
   jobType: string;
   remote: string;
+  locations: string[];
 }
 
 interface SearchCardProps {
@@ -25,9 +27,97 @@ const SearchCard: React.FC<SearchCardProps> = ({
   searchDetails,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [editingSalary, setEditingSalary] = useState(false);
+  const [editingWorkStyle, setEditingWorkStyle] = useState(false);
+  const [editingLocations, setEditingLocations] = useState(false);
+  const [tempSalary, setTempSalary] = useState(searchDetails.salary);
+  const [tempWorkStyle, setTempWorkStyle] = useState(searchDetails.remote);
+  const [tempLocations, setTempLocations] = useState(searchDetails.locations);
+  const [locationFilter, setLocationFilter] = useState('');
+
+  // Available work style options
+  const workStyleOptions = ['Hybrid', 'In Person', 'Fully Remote'];
+
+  // Available location options (this would typically come from an API)
+  const availableLocations = [
+    'San Francisco Bay Area',
+    'New York',
+    'Los Angeles',
+    'Chicago',
+    'Austin, TX',
+    'Seattle',
+    'Boston',
+    'Denver',
+    'Remote',
+    'Miami',
+    'Portland',
+    'Atlanta'
+  ];
+
+  const filteredLocations = availableLocations.filter(loc =>
+    loc.toLowerCase().includes(locationFilter.toLowerCase()) &&
+    !tempLocations.includes(loc)
+  );
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleSalarySave = () => {
+    searchDetails.salary = tempSalary;
+    setEditingSalary(false);
+  };
+
+  const handleSalaryCancel = () => {
+    setTempSalary(searchDetails.salary);
+    setEditingSalary(false);
+  };
+
+  const handleWorkStyleSave = () => {
+    searchDetails.remote = tempWorkStyle;
+    setEditingWorkStyle(false);
+  };
+
+  const handleWorkStyleCancel = () => {
+    setTempWorkStyle(searchDetails.remote);
+    setEditingWorkStyle(false);
+  };
+
+  const handleLocationsSave = () => {
+    searchDetails.locations = tempLocations;
+    setEditingLocations(false);
+  };
+
+  const handleLocationsCancel = () => {
+    setTempLocations(searchDetails.locations);
+    setLocationFilter('');
+    setEditingLocations(false);
+  };
+
+  const addLocation = (location: string) => {
+    if (!tempLocations.includes(location)) {
+      setTempLocations([...tempLocations, location]);
+    }
+    setLocationFilter('');
+  };
+
+  const removeLocation = (location: string) => {
+    setTempLocations(tempLocations.filter(loc => loc !== location));
+  };
+
+  const removeRole = (role: string) => {
+    searchDetails.roles = searchDetails.roles.filter(r => r !== role);
+  };
+
+  const removeJobBoard = (jobBoard: string) => {
+    searchDetails.jobBoards = searchDetails.jobBoards.filter(jb => jb !== jobBoard);
+  };
+
+  const getDisplayLocation = () => {
+    if (searchDetails.locations.length > 1) {
+      return 'Multiple locations';
+    }
+    return searchDetails.locations[0] || location;
   };
 
   return (
@@ -48,7 +138,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
                   <MapPin className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{location}</span>
+                  <span className="truncate">{getDisplayLocation()}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Calendar className="w-4 h-4 flex-shrink-0" />
@@ -85,43 +175,237 @@ const SearchCard: React.FC<SearchCardProps> = ({
       {/* Expandable Details Section */}
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t border-dark-border/50">
           <div className="pt-4 space-y-4">
-            {/* Keywords */}
+            {/* Roles */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-300 mb-2">Keywords</h4>
+              <h4 className="text-sm font-semibold text-gray-300 mb-2">Roles</h4>
               <div className="flex flex-wrap gap-2">
-                {searchDetails.keywords.map((keyword, index) => (
-                  <span
+                {searchDetails.roles.map((role, index) => (
+                  <div
                     key={index}
-                    className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium"
+                    className="flex items-center px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium group"
                   >
-                    {keyword}
-                  </span>
+                    <span>{role}</span>
+                    <button
+                      onClick={() => removeRole(role)}
+                      className="ml-2 opacity-0 group-hover:opacity-100 hover:text-primary/80 transition-opacity duration-200"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* Search Criteria Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Job Boards */}
+            <div>
+              <h4 className="text-sm font-semibold text-gray-300 mb-2">Job Boards</h4>
+              <div className="flex flex-wrap gap-2">
+                {searchDetails.jobBoards.map((jobBoard, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center px-3 py-1 bg-secondary/20 text-secondary rounded-full text-xs font-medium group"
+                  >
+                    <span>{jobBoard}</span>
+                    <button
+                      onClick={() => removeJobBoard(jobBoard)}
+                      className="ml-2 opacity-0 group-hover:opacity-100 hover:text-secondary/80 transition-opacity duration-200"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Salary Range */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-gray-300">Salary Range</h4>
+                {!editingSalary && (
+                  <button
+                    onClick={() => setEditingSalary(true)}
+                    className="text-primary hover:text-primary/80 transition-colors duration-200"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              {editingSalary ? (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={tempSalary}
+                    onChange={(e) => setTempSalary(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-gray-900/50 border border-dark-border rounded-lg text-gray-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="e.g., $120k - $180k"
+                  />
+                  <button
+                    onClick={handleSalarySave}
+                    className="text-green-400 hover:text-green-300 transition-colors duration-200"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleSalaryCancel}
+                    className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">{searchDetails.salary}</p>
+              )}
+            </div>
+
+            {/* Work Style */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-gray-300">Work Style</h4>
+                {!editingWorkStyle && (
+                  <button
+                    onClick={() => setEditingWorkStyle(true)}
+                    className="text-primary hover:text-primary/80 transition-colors duration-200"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              {editingWorkStyle ? (
+                <div className="flex items-center space-x-2">
+                  <select
+                    value={tempWorkStyle}
+                    onChange={(e) => setTempWorkStyle(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-gray-900/50 border border-dark-border rounded-lg text-gray-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    {workStyleOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleWorkStyleSave}
+                    className="text-green-400 hover:text-green-300 transition-colors duration-200"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleWorkStyleCancel}
+                    className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">{searchDetails.remote}</p>
+              )}
+            </div>
+
+            {/* Locations */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-gray-300">Location(s)</h4>
+                {!editingLocations && (
+                  <button
+                    onClick={() => setEditingLocations(true)}
+                    className="text-primary hover:text-primary/80 transition-colors duration-200"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              {editingLocations ? (
+                <div className="space-y-3">
+                  {/* Selected Locations */}
+                  {tempLocations.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {tempLocations.map((loc, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium"
+                        >
+                          <span>{loc}</span>
+                          <button
+                            onClick={() => removeLocation(loc)}
+                            className="ml-2 hover:text-primary/80 transition-colors duration-200"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Location Search */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={locationFilter}
+                      onChange={(e) => setLocationFilter(e.target.value)}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-dark-border rounded-lg text-gray-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Search and select locations..."
+                    />
+                    
+                    {/* Location Dropdown */}
+                    {locationFilter && filteredLocations.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-dark-card border border-dark-border rounded-lg shadow-xl z-50 max-h-40 overflow-y-auto">
+                        {filteredLocations.map((loc) => (
+                          <button
+                            key={loc}
+                            onClick={() => addLocation(loc)}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-primary transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+                          >
+                            {loc}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleLocationsSave}
+                      className="text-green-400 hover:text-green-300 transition-colors duration-200"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleLocationsCancel}
+                      className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {searchDetails.locations.map((loc, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-xs font-medium"
+                    >
+                      {loc}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Other Search Criteria */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-dark-border/30">
               <div>
                 <h4 className="text-sm font-semibold text-gray-300 mb-1">Experience Level</h4>
                 <p className="text-sm text-gray-400">{searchDetails.experience}</p>
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-1">Salary Range</h4>
-                <p className="text-sm text-gray-400">{searchDetails.salary}</p>
-              </div>
-              <div>
                 <h4 className="text-sm font-semibold text-gray-300 mb-1">Job Type</h4>
                 <p className="text-sm text-gray-400">{searchDetails.jobType}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-1">Work Style</h4>
-                <p className="text-sm text-gray-400">{searchDetails.remote}</p>
               </div>
             </div>
           </div>
