@@ -215,7 +215,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
   };
 
   return (
-    <div className={`bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300 ${(isWorkStyleDropdownOpen || isLocationDropdownOpen) ? 'relative z-30' : ''}`}>
+    <div className={`bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300 ${(isWorkStyleDropdownOpen || isLocationDropdownOpen) ? 'relative z-50' : ''}`}>
       {/* Main Card Content */}
       <div className="p-4 sm:p-6">
         {/* Header Section */}
