@@ -1,31 +1,60 @@
 import React from 'react';
-import { Search, Calendar, MapPin, Filter } from 'lucide-react';
+import { Search, Calendar, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import SearchCard from '../components/SearchCard';
 
 const Searches: React.FC = () => {
   const searches = [
     {
       id: 1,
-      query: 'React Frontend Developer',
+      title: 'React Frontend Developer',
       location: 'San Francisco Bay Area',
-      results: 47,
       createdDate: '2 days ago',
-      status: 'Active',
+      searchDetails: {
+        keywords: ['React', 'Frontend', 'JavaScript', 'TypeScript'],
+        experience: 'Senior Level',
+        salary: '$120k - $180k',
+        jobType: 'Full-time',
+        remote: 'Hybrid'
+      }
     },
     {
       id: 2,
-      query: 'Full Stack JavaScript',
+      title: 'Product Manager',
       location: 'Remote',
-      results: 124,
       createdDate: '1 week ago',
-      status: 'Completed',
+      searchDetails: {
+        keywords: ['Product Management', 'Strategy', 'Analytics'],
+        experience: 'Mid to Senior Level',
+        salary: '$100k - $160k',
+        jobType: 'Full-time',
+        remote: 'Remote'
+      }
     },
     {
       id: 3,
-      query: 'Senior React Native Developer',
+      title: 'Chief Product Officer',
       location: 'New York',
-      results: 23,
       createdDate: '2 weeks ago',
-      status: 'Archived',
+      searchDetails: {
+        keywords: ['CPO', 'Product Strategy', 'Leadership', 'Vision'],
+        experience: 'Executive Level',
+        salary: '$200k - $350k',
+        jobType: 'Full-time',
+        remote: 'On-site'
+      }
+    },
+    {
+      id: 4,
+      title: 'Java Data Engineer',
+      location: 'Austin, TX',
+      createdDate: '3 weeks ago',
+      searchDetails: {
+        keywords: ['Java', 'Data Engineering', 'ETL', 'Big Data'],
+        experience: 'Senior Level',
+        salary: '$130k - $190k',
+        jobType: 'Full-time',
+        remote: 'Hybrid'
+      }
     },
   ];
 
@@ -60,48 +89,7 @@ const Searches: React.FC = () => {
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
-                  <Search className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-200 mb-1">{search.query}</h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{search.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{search.createdDate}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                search.status === 'Active' ? 'text-secondary bg-secondary/20' :
-                search.status === 'Completed' ? 'text-primary bg-primary/20' : 'text-gray-300 bg-gray-500/20'
-              }`}>
-                {search.status}
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between pt-4 border-t border-dark-border">
-              <div className="text-sm text-gray-400">
-                <span className="font-medium text-gray-200">{search.results}</span> jobs found
-              </div>
-              <div className="flex space-x-3">
-                <button className="text-primary hover:text-primary/80 font-medium text-sm transition-colors duration-200">
-                </button>
-                <button className="text-primary hover:text-primary/80 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 font-medium text-sm transition-all duration-200 ease-in-out">
-                  View Results
-                </button>
-                <button className="text-gray-400 hover:text-gray-300 font-medium text-sm transition-colors duration-200">
-                </button>
-                <button className="text-gray-400 hover:text-gray-300 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500/50 font-medium text-sm transition-all duration-200 ease-in-out">
-                  Run Again
-                </button>
-              </div>
-            </div>
-          </div>
+          <SearchCard key={search.id} {...search} />
         ))}
       </div>
     </div>
