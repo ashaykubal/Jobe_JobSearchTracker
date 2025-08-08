@@ -85,13 +85,6 @@ const Searches: React.FC = () => {
 
       <div className="grid gap-6">
         {searches.map((search) => (
-          )
-          )
-          }
-          <div key={search.id} className="bg-dark-card/70 backdrop-blur-sm rounded-lg p-6 shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
           <SearchCard key={search.id} {...search} />
         ))}
       </div>
@@ -100,5 +93,3 @@ const Searches: React.FC = () => {
 };
 
 export default Searches;
-  )
-}
