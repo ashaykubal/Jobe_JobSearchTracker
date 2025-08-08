@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Calendar, MapPin, ChevronDown, ChevronUp, Edit3, X, Check } from 'lucide-react';
 
