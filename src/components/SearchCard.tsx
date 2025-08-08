@@ -30,6 +30,8 @@ const SearchCard: React.FC<SearchCardProps> = ({
   const [editingLocations, setEditingLocations] = useState(false);
   const [isWorkStyleDropdownOpen, setIsWorkStyleDropdownOpen] = useState(false);
   const [openWorkStyleUpwards, setOpenWorkStyleUpwards] = useState(false);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [openLocationUpwards, setOpenLocationUpwards] = useState(false);
   const [tempSalary, setTempSalary] = useState(searchDetails.salary);
   const [tempWorkStyle, setTempWorkStyle] = useState(searchDetails.remote);
   const [tempLocations, setTempLocations] = useState(searchDetails.locations);
@@ -38,6 +40,10 @@ const SearchCard: React.FC<SearchCardProps> = ({
   // Refs for work style dropdown
   const workStyleButtonRef = useRef<HTMLButtonElement>(null);
   const workStyleDropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Refs for location dropdown
+  const locationInputRef = useRef<HTMLInputElement>(null);
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
 
   // Available work style options
   const workStyleOptions = ['Hybrid', 'In Person', 'Fully Remote'];
@@ -147,6 +153,48 @@ const SearchCard: React.FC<SearchCardProps> = ({
     };
   }, [isWorkStyleDropdownOpen]);
 
+  // Handle click outside location dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isLocationDropdownOpen &&
+        locationInputRef.current &&
+        locationDropdownRef.current &&
+        !locationInputRef.current.contains(event.target as Node) &&
+        !locationDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsLocationDropdownOpen(false);
+      }
+    };
+
+    if (isLocationDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isLocationDropdownOpen]);
+
+  // Handle location dropdown positioning
+  useEffect(() => {
+    if (isLocationDropdownOpen && locationInputRef.current) {
+      const inputRect = locationInputRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 160; // max-h-40 = 160px
+      const mobileNavHeight = 80; // Mobile navigation height
+      const spaceBelow = viewportHeight - inputRect.bottom - mobileNavHeight;
+      
+      if (spaceBelow < dropdownHeight) {
+        setOpenLocationUpwards(true);
+      } else {
+        setOpenLocationUpwards(false);
+      }
+    } else {
+      setOpenLocationUpwards(false);
+    }
+  }, [isLocationDropdownOpen]);
+
   const removeLocation = (location: string) => {
     setTempLocations(tempLocations.filter(loc => loc !== location));
   };
@@ -167,7 +215,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
   };
 
   return (
-    <div className={`bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300 ${isWorkStyleDropdownOpen ? 'relative z-20' : ''}`}>
+    <div className={`bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300 ${(isWorkStyleDropdownOpen || isLocationDropdownOpen) ? 'relative z-20' : ''}`}>
       {/* Main Card Content */}
       <div className="p-4 sm:p-6">
         {/* Header Section */}
@@ -348,6 +396,8 @@ const SearchCard: React.FC<SearchCardProps> = ({
                             onClick={() => {
                               setTempWorkStyle(option);
                               setIsWorkStyleDropdownOpen(false);
+                              searchDetails.remote = option;
+                              setEditingWorkStyle(false);
                             }}
                             className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-800/50 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ease-in-out first:rounded-t-lg last:rounded-b-lg ${
                               option === tempWorkStyle ? 'bg-primary/20 text-primary' : 'text-gray-300'
@@ -358,22 +408,6 @@ const SearchCard: React.FC<SearchCardProps> = ({
                         ))}
                       </div>
                     )}
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={handleWorkStyleSave}
-                      className="text-green-400 hover:text-green-300 transition-colors duration-200"
-                    >
-                      <Check className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={handleWorkStyleCancel}
-                      className="text-red-400 hover:text-red-300 transition-colors duration-200"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               ) : (
@@ -419,20 +453,30 @@ const SearchCard: React.FC<SearchCardProps> = ({
                   {/* Location Search */}
                   <div className="relative">
                     <input
+                      ref={locationInputRef}
                       type="text"
                       value={locationFilter}
                       onChange={(e) => setLocationFilter(e.target.value)}
+                      onFocus={() => setIsLocationDropdownOpen(true)}
                       className="w-full px-3 py-2 bg-gray-900/50 border border-dark-border rounded-lg text-gray-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
                       placeholder="Search and select locations..."
                     />
                     
                     {/* Location Dropdown */}
-                    {locationFilter && filteredLocations.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-dark-card border border-dark-border rounded-lg shadow-xl z-50 max-h-40 overflow-y-auto">
+                    {isLocationDropdownOpen && locationFilter && filteredLocations.length > 0 && (
+                      <div 
+                        ref={locationDropdownRef}
+                        className={`absolute left-0 right-0 w-full bg-dark-card border border-dark-border rounded-lg shadow-xl z-[100] max-h-40 overflow-y-auto ${
+                          openLocationUpwards ? 'bottom-full mb-2' : 'top-full mt-2'
+                        }`}
+                      >
                         {filteredLocations.map((loc) => (
                           <button
                             key={loc}
-                            onClick={() => addLocation(loc)}
+                            onClick={() => {
+                              addLocation(loc);
+                              setIsLocationDropdownOpen(false);
+                            }}
                             className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-primary transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
                           >
                             {loc}
