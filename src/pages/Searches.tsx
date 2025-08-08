@@ -12,9 +12,7 @@ const Searches: React.FC = () => {
       searchDetails: {
         roles: ['React Frontend Developer', 'Senior Frontend Developer'],
         jobBoards: ['indeed.com', 'linkedin.com', 'glassdoor.com'],
-        experience: 'Senior Level',
         salary: '$120k - $180k',
-        jobType: 'Full-time',
         remote: 'Hybrid',
         locations: ['San Francisco Bay Area']
       }
@@ -27,9 +25,7 @@ const Searches: React.FC = () => {
       searchDetails: {
         roles: ['Product Manager', 'Senior Product Manager'],
         jobBoards: ['linkedin.com', 'ashby.com', 'lever.co'],
-        experience: 'Mid to Senior Level',
         salary: '$100k - $160k',
-        jobType: 'Full-time',
         remote: 'Fully Remote',
         locations: ['Remote']
       }
@@ -42,9 +38,7 @@ const Searches: React.FC = () => {
       searchDetails: {
         roles: ['Chief Product Officer', 'VP of Product'],
         jobBoards: ['linkedin.com', 'executive-search.com'],
-        experience: 'Executive Level',
         salary: '$200k - $350k',
-        jobType: 'Full-time',
         remote: 'In Person',
         locations: ['New York']
       }
@@ -57,9 +51,7 @@ const Searches: React.FC = () => {
       searchDetails: {
         roles: ['Java Data Engineer', 'Senior Data Engineer'],
         jobBoards: ['indeed.com', 'dice.com', 'stackoverflow.com'],
-        experience: 'Senior Level',
         salary: '$130k - $190k',
-        jobType: 'Full-time',
         remote: 'Hybrid',
         locations: ['Austin, TX']
       }

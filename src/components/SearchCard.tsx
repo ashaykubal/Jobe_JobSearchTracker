@@ -4,9 +4,7 @@ import { Search, Calendar, MapPin, ChevronDown, ChevronUp, Edit3, X, Check } fro
 interface SearchDetails {
   roles: string[];
   jobBoards: string[];
-  experience: string;
   salary: string;
-  jobType: string;
   remote: string;
   locations: string[];
 }
@@ -276,30 +274,52 @@ const SearchCard: React.FC<SearchCardProps> = ({
                 )}
               </div>
               {editingWorkStyle ? (
-                <div className="flex items-center space-x-2">
-                  <select
-                    value={tempWorkStyle}
-                    onChange={(e) => setTempWorkStyle(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-gray-900/50 border border-dark-border rounded-lg text-gray-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
-                    {workStyleOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={handleWorkStyleSave}
-                    className="text-green-400 hover:text-green-300 transition-colors duration-200"
-                  >
-                    <Check className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleWorkStyleCancel}
-                    className="text-red-400 hover:text-red-300 transition-colors duration-200"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {/* Toggle dropdown logic would go here */}}
+                      className="w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:opacity-80 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 flex items-center justify-between text-gray-300 bg-gray-500/20"
+                    >
+                      <span>{tempWorkStyle}</span>
+                      <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                    </button>
+                    
+                    {/* Dropdown would be implemented here similar to ApplicationCard */}
+                    <div className="absolute left-0 right-0 w-full bg-dark-card border border-dark-border rounded-lg shadow-xl z-50 top-full mt-2">
+                      {workStyleOptions.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => {
+                            setTempWorkStyle(option);
+                            // Close dropdown logic would go here
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-800/50 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ease-in-out first:rounded-t-lg last:rounded-b-lg ${
+                            option === tempWorkStyle ? 'bg-primary/20 text-primary' : 'text-gray-300'
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleWorkStyleSave}
+                      className="text-green-400 hover:text-green-300 transition-colors duration-200"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleWorkStyleCancel}
+                      className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm text-gray-400">{searchDetails.remote}</p>
@@ -395,18 +415,6 @@ const SearchCard: React.FC<SearchCardProps> = ({
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Other Search Criteria */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-dark-border/30">
-              <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-1">Experience Level</h4>
-                <p className="text-sm text-gray-400">{searchDetails.experience}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-1">Job Type</h4>
-                <p className="text-sm text-gray-400">{searchDetails.jobType}</p>
-              </div>
             </div>
           </div>
         </div>
