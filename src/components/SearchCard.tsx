@@ -70,7 +70,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
         <div className="pt-4 border-t border-dark-border">
           <button
             onClick={toggleExpanded}
-            className="flex items-center justify-between w-full text-left text-primary hover:text-primary/80 font-medium text-sm transition-all duration-200 ease-in-out hover:scale-[1.02] focus:scale-[1.02] focus:outline-none rounded-md p-2 -m-2"
+            className="flex items-center justify-between w-full text-left text-primary hover:text-primary/80 font-medium text-sm transition-all duration-200 ease-in-out hover:scale-[1.02] focus:scale-[1.02] focus:outline-none rounded-md py-2 pl-2 pr-1"
           >
             <span>View Details</span>
             {isExpanded ? (
