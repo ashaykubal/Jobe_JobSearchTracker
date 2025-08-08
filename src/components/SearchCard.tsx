@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Search, Calendar, MapPin, ChevronDown, ChevronUp, Edit3, X, Check } from 'lucide-react';
 
 interface SearchDetails {
@@ -28,10 +29,16 @@ const SearchCard: React.FC<SearchCardProps> = ({
   const [editingSalary, setEditingSalary] = useState(false);
   const [editingWorkStyle, setEditingWorkStyle] = useState(false);
   const [editingLocations, setEditingLocations] = useState(false);
+  const [isWorkStyleDropdownOpen, setIsWorkStyleDropdownOpen] = useState(false);
+  const [openWorkStyleUpwards, setOpenWorkStyleUpwards] = useState(false);
   const [tempSalary, setTempSalary] = useState(searchDetails.salary);
   const [tempWorkStyle, setTempWorkStyle] = useState(searchDetails.remote);
   const [tempLocations, setTempLocations] = useState(searchDetails.locations);
   const [locationFilter, setLocationFilter] = useState('');
+
+  // Refs for work style dropdown
+  const workStyleButtonRef = useRef<HTMLButtonElement>(null);
+  const workStyleDropdownRef = useRef<HTMLDivElement>(null);
 
   // Available work style options
   const workStyleOptions = ['Hybrid', 'In Person', 'Fully Remote'];
@@ -99,6 +106,48 @@ const SearchCard: React.FC<SearchCardProps> = ({
     setLocationFilter('');
   };
 
+  // Handle work style dropdown positioning
+  useEffect(() => {
+    if (isWorkStyleDropdownOpen && workStyleButtonRef.current) {
+      const buttonRect = workStyleButtonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 250; // Estimated dropdown height
+      const mobileNavHeight = 80; // Mobile navigation height
+      const spaceBelow = viewportHeight - buttonRect.bottom - mobileNavHeight;
+      
+      if (spaceBelow < dropdownHeight) {
+        setOpenWorkStyleUpwards(true);
+      } else {
+        setOpenWorkStyleUpwards(false);
+      }
+    } else {
+      setOpenWorkStyleUpwards(false);
+    }
+  }, [isWorkStyleDropdownOpen]);
+
+  // Handle click outside work style dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isWorkStyleDropdownOpen &&
+        workStyleButtonRef.current &&
+        workStyleDropdownRef.current &&
+        !workStyleButtonRef.current.contains(event.target as Node) &&
+        !workStyleDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsWorkStyleDropdownOpen(false);
+      }
+    };
+
+    if (isWorkStyleDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isWorkStyleDropdownOpen]);
+
   const removeLocation = (location: string) => {
     setTempLocations(tempLocations.filter(loc => loc !== location));
   };
@@ -119,7 +168,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
   };
 
   return (
-    <div className="bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300">
+    <div className={`bg-dark-card/70 backdrop-blur-sm rounded-lg shadow-glow-card border border-dark-border hover:shadow-glow-card-hover hover:border-primary/20 transition-all duration-300 ${isWorkStyleDropdownOpen ? 'relative z-20' : ''}`}>
       {/* Main Card Content */}
       <div className="p-4 sm:p-6">
         {/* Header Section */}
@@ -277,32 +326,39 @@ const SearchCard: React.FC<SearchCardProps> = ({
                 <div className="space-y-3">
                   <div className="relative">
                     <button
+                      ref={workStyleButtonRef}
                       type="button"
-                      onClick={() => {/* Toggle dropdown logic would go here */}}
+                      onClick={() => setIsWorkStyleDropdownOpen(!isWorkStyleDropdownOpen)}
                       className="w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:opacity-80 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 flex items-center justify-between text-gray-300 bg-gray-500/20"
                     >
                       <span>{tempWorkStyle}</span>
-                      <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isWorkStyleDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                     
-                    {/* Dropdown would be implemented here similar to ApplicationCard */}
-                    <div className="absolute left-0 right-0 w-full bg-dark-card border border-dark-border rounded-lg shadow-xl z-50 top-full mt-2">
-                      {workStyleOptions.map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            setTempWorkStyle(option);
-                            // Close dropdown logic would go here
-                          }}
-                          className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-800/50 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ease-in-out first:rounded-t-lg last:rounded-b-lg ${
-                            option === tempWorkStyle ? 'bg-primary/20 text-primary' : 'text-gray-300'
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
+                    {isWorkStyleDropdownOpen && (
+                      <div 
+                        ref={workStyleDropdownRef}
+                        className={`absolute left-0 w-48 bg-dark-card border border-dark-border rounded-lg shadow-xl z-[100] ${
+                          openWorkStyleUpwards ? 'bottom-full mb-2' : 'top-full mt-2'
+                        }`}
+                      >
+                        {workStyleOptions.map((option) => (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => {
+                              setTempWorkStyle(option);
+                              setIsWorkStyleDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-800/50 hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ease-in-out first:rounded-t-lg last:rounded-b-lg ${
+                              option === tempWorkStyle ? 'bg-primary/20 text-primary' : 'text-gray-300'
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Action Buttons */}
